@@ -9,7 +9,7 @@ from lib.metric_utils import init_seed
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', default='nyc_bt', type=str, help='nyc_mb,nyc_mt,nyc_bt')
+    parser.add_argument('--dataset', default='nyc_mb', type=str, help='nyc_mb,nyc_mt,nyc_bt')
     parser.add_argument('--device', default='cuda:0', type=str, help='')
     parser.add_argument('--model', default='CausalMTF', type=str, help='')
     parser.add_argument('--seed', default=12, type=int, help='')
@@ -63,4 +63,10 @@ if __name__=='__main__':
 
     # model training
     trainer.train_exec(num_epochs, lr, weight_decay, train_loader, val_loader, test_loader, device)
-    trainer.plot_loss_curve()
+
+    trainer.test_exec(test_loader, device)
+
+    _, xm_test_loss_mae, xn_test_loss_mae, _, xm_test_loss_rmse, xn_test_loss_rmse = trainer.test_exec_val(test_loader, device)
+
+    print('Test Phase: mode1 Mae Loss: %.4f, mode2 Mae Loss: %.4f,' % (xm_test_loss_mae, xn_test_loss_mae))
+    print('Test Phase: mode1 Rmse Loss: %.4f, mode2 Rmse Loss: %.4f,' % (xm_test_loss_rmse, xn_test_loss_rmse))
